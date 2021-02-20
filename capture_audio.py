@@ -8,22 +8,35 @@ import requests
 import numpy
 
 FORMAT = pyaudio.paInt16
-RATE = 44100
-CHUNK = 1024
-MAX = 127
+RATE   = 44100
+CHUNK  = 1024
+MAX    = 127
 FACTOR = 2000
 
 def get_sound_level(channel):
-    return audioop.rms(channel.tostring(), 2)
+    return audioop.rms(channel.tostring(),
+     2)
 
 def prevent_overflow(soundLevel):
     return min(127, soundLevel)
 
 audio = pyaudio.PyAudio()
 
-def capture_audio(seconds = 3600, index = 0, channelCount = 2, selectedChannelIndex = None):
+def capture_audio(
+    seconds              = 3600,
+    index                = 0,
+    channelCount         = 2,
+    selectedChannelIndex = None
+    ):
 
-    stream = audio.open(format=FORMAT, channels=channelCount, rate=RATE, input=True, frames_per_buffer=CHUNK, input_device_index=index)
+    stream = audio.open(
+        format             = FORMAT,
+        channels           = channelCount, 
+        rate               = RATE, 
+        input              = True, 
+        frames_per_buffer  = CHUNK, 
+        input_device_index = index
+        )
 
     latestSoundLevels = []
     for i in range(0, channelCount):
@@ -47,8 +60,8 @@ def capture_audio(seconds = 3600, index = 0, channelCount = 2, selectedChannelIn
         latest     = update_latest(i, soundLevel)
         maxLevel   = max(latest)
         velocity   = prevent_overflow(maxLevel)
+        note       = 60 + i
         print(velocity)
-        note = 60 + i
         requests.post("http://127.0.0.1:5000/",
                     data={'note': note, 'velocity': velocity})
 
@@ -72,5 +85,8 @@ if __name__ == "__main__":
     if len(sys.argv) == 1:
         capture_audio()
     else:
-        capture_audio(int(sys.argv[1]), int(sys.argv[2]),
-           int(sys.argv[3]), int(sys.argv[4]) if len(sys.argv) == 5 else None)
+        capture_audio(
+            int(sys.argv[1]),
+            int(sys.argv[2]),
+            int(sys.argv[3]),
+            int(sys.argv[4]) if len(sys.argv) == 5 else None)
