@@ -1,3 +1,5 @@
+# Converts sound levels to midi notes
+
 from simplecoremidi import send_midi
 from flask import Flask, request
 

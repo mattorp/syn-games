@@ -1,9 +1,10 @@
+## Runs audio capture and midi server
+
 import os
 import subprocess
 import signal
 import time
 import sys
-
 
 def run(seconds=3600, index=0, channels=2, selectedChannel=None):
   channel = '' if selectedChannel is None else selectedChannel
@@ -30,5 +31,9 @@ if __name__ == "__main__":
     if len(sys.argv) == 1:
         run()
     else:
-        run(int(sys.argv[1]), int(sys.argv[2]),
-                      int(sys.argv[3]), int(sys.argv[4]) if len(sys.argv) == 5 else None)
+        run(
+          int(sys.argv[1]), 
+          int(sys.argv[2]),
+          int(sys.argv[3]),
+          int(sys.argv[4]) if len(sys.argv) == 5 else None
+          )
