@@ -1,4 +1,4 @@
-# Converts sound levels to midi notes
+# Converts sound levels to midi notes for consumption in synesthesia
 
 from simplecoremidi import send_midi
 from flask import Flask, request
