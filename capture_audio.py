@@ -1,3 +1,5 @@
+# Captures audio and sends audio levels to a midi server
+
 import time
 import pyaudio
 import audioop
@@ -11,38 +13,54 @@ CHUNK = 1024
 MAX = 127
 FACTOR = 2000
 
+def get_sound_level(channel):
+    return audioop.rms(channel.tostring(), 2)
+
+def prevent_overflow(soundLevel):
+    return min(127, soundLevel)
+
 audio = pyaudio.PyAudio()
 
-def capture_audio(seconds = 3600, index = 0, channels = 2, selectedChannel = None):
-    stream = audio.open(format=FORMAT, channels=channels, rate=RATE,
-                        input=True, frames_per_buffer=CHUNK, input_device_index=index)
+def capture_audio(seconds = 3600, index = 0, channelCount = 2, selectedChannelIndex = None):
 
-    latestRms = []
-    for i in range(0,3):
-        latestRms.append(list(range(0, 20)))
+    stream = audio.open(format=FORMAT, channels=channelCount, rate=RATE, input=True, frames_per_buffer=CHUNK, input_device_index=index)
 
-    def postResult(i, data_array):
-        channel = data_array[i::channels]
-        note = 60 + i
-        rms = audioop.rms(channel.tostring(), 2)
-        lRms = latestRms[i]
-        lRms.pop(0)
-        lRms.append(rms)
-        velocity = min(127,round(max(lRms)/FACTOR*MAX))
+    latestSoundLevels = []
+    for i in range(0, channelCount):
+        latestSoundLevels.append(list(range(0, 20)))
+
+    def get_channel(i, data_array):
+        return data_array[i::channelCount]
+
+    def update_latest(i, soundLevel):
+        latest = latestSoundLevels[i]
+        latest.pop(0)
+        latest.append(soundLevel)
+        return latest
+
+    def normalize_sound_level(soundLevel):
+        return round(soundLevel/FACTOR*MAX)
+        
+    def send_midi_note(i, data_array):
+        channel    = get_channel(i, data_array)
+        soundLevel = normalize_sound_level(get_sound_level(channel))
+        latest     = update_latest(i, soundLevel)
+        maxLevel   = max(latest)
+        velocity   = prevent_overflow(maxLevel)
         print(velocity)
+        note = 60 + i
         requests.post("http://127.0.0.1:5000/",
                     data={'note': note, 'velocity': velocity})
-    
 
     for _ in range(0, int(RATE/CHUNK*seconds)):
-        data = stream.read(CHUNK, exception_on_overflow=False)
+        data       = stream.read(CHUNK, exception_on_overflow=False)
         data_array = numpy.fromstring(data, dtype='int16')
 
-        if selectedChannel is not None:
-            postResult(selectedChannel,data_array)
+        if selectedChannelIndex is not None:
+            send_midi_note(selectedChannelIndex,data_array)
         else:
-            for i in range(0,channels ):
-                postResult(i, data_array)
+            for i in range(0,channelCount ):
+                send_midi_note(i, data_array)
 
         time.sleep(.1)
 
