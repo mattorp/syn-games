@@ -7,11 +7,12 @@ import sys
 import requests
 import numpy
 
-FORMAT = pyaudio.paInt16
-RATE   = 44100
-CHUNK  = 1024
-MAX    = 127
-FACTOR = 2000
+FORMAT                   = pyaudio.paInt16
+RATE                     = 44100
+CHUNK                    = 1024
+MAX                      = 127
+FACTOR                   = 4000
+KEEP_AVG_FOR_ITTERATIONS = 10
 
 def get_sound_level(channel):
     return audioop.rms(channel.tostring(),
@@ -40,7 +41,7 @@ def capture_audio(
 
     latestSoundLevels = []
     for i in range(0, channelCount):
-        latestSoundLevels.append(list(range(0, 20)))
+        latestSoundLevels.append(list(range(0, KEEP_AVG_FOR_ITTERATIONS)))
 
     def get_channel(i, data_array):
         return data_array[i::channelCount]
@@ -58,7 +59,7 @@ def capture_audio(
         channel    = get_channel(i, data_array)
         soundLevel = normalize_sound_level(get_sound_level(channel))
         latest     = update_latest(i, soundLevel)
-        maxLevel   = max(latest)
+        maxLevel   = round(sum(latest)/len(latest)*2)
         velocity   = prevent_overflow(maxLevel)
         note       = 60 + i
         print(velocity)
