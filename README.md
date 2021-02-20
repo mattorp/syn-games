@@ -12,3 +12,9 @@ Examples of usage:
 
 This extends to various sports and games. 
 
+## Videos
+These are placeholder. New ones will replcae them soon
+
+https://youtu.be/1zvDIPuOZ5A
+
+https://youtu.be/R23TcANc-0w
