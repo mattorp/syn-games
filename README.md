@@ -72,9 +72,9 @@ vboxmanage startvm pixy --type headless
 sudo ssh pixy@127.0.0.1 -p 2222
 ```
 
-(re)connect the physical usb to Pixy
+(re)connect the physical usb to Pixy.
 
-In the VM
+In the VM (ssh)
 ```
 cd ~/pixy2/build/midi
 sudo python3 pixy_to_midi.py
