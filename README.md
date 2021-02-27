@@ -2,11 +2,34 @@
 
 A suite of tools that allow various interactions with Synethesia with the goal of creating new types of games: Sports, board games, language learning, song/music lessons, etc.
 
-__NOTE:__ The project is still in very early stage, and is not documented well yet. Do only try using this now if you don't mind working out most problems yourself, and find documentation elsewhere. 
+With these tools, you can map sound at different locations (if using multiple microphones), track movement of objects/players, draw the gameboard in realtime, etc. All to provide a dynamic experience, that can easily change between sessions. 
 
-## Setup
+A primary goal is to let everyone quickly design new games. The user experience is abysmal for now however, but it should improve rapidly.
 
-For sound: Connect multiple microphones to the computer. You can use usb to jack converters for this.
+__NOTE:__ The project is still in very early stage, and is not documented well yet. Do only try to use this now if you don't mind working out most problems yourself, and find documentation elsewhere. 
+
+## Synesthesia
+Install and open Synesthesia from https://www.synesthesia.live
+
+### MIDI
+
+Start the midi server in one terminal
+```
+python3 midi_server.py
+```
+
+Go to MIDI settings -> Devices in Synesthesia and refresh.
+
+For mapping use the following, which sends a single specified note to Synesthesia. Click MIDI in the top right corner, select the control and run the script below for each control.
+
+In another terminal
+```
+python3 map_note.py [note]
+```
+
+## Sound
+
+Connect one or multiple microphones to the computer. You can use usb to jack converters for this.
 
 ### Terminal microphone access
 
@@ -25,30 +48,23 @@ Start VSCode from the terminal:
 code
 ```
 
-For the default input and options use. 
 ```
-python3 syn_server.py
+python3 capture_audio.py
 ```
 
 You can adjust the settings using
 ```
-python3 syn_server.py seconds=3600 index=7 channelCount=3 selectedChannelIndex=0
+python3 capture_audio.py seconds=3600 index=7 channelCount=3 selectedChannelIndex=0
 ```
 
 selectedChannelIndex is optional, if not provided it uses all channel inputs.
 
-### Synesthesia
-Install and open Synesthesia from https://www.synesthesia.live
 
-### MIDI
-Go to MIDI settings -> Devices in Synesthesia and refresh.
 
-For mapping use the selectedChannelIndex parameter as shown above. This lets you map individual channels/microphones to each MIDI mapping.
-
-### Video
+## Video
 [DRAFT]('./Video_README_DRAFT.md')
 
-#### When video is set up
+### When video is set up
 
 In host
 
@@ -80,12 +96,9 @@ In the VM (ssh)
 ```
 cd ~/pixy2/build/midi
 sudo python3 pixy_to_midi.py
-```
+``` 
 
-## Usage
-Provide sounds for each microphone to trigger the MIDI notes.
-
-# Examples
+## Examples
 
 Examples of usage: 
 - Track sound at various points
@@ -93,7 +106,7 @@ Examples of usage:
     - around a table. As players drum on the table, various parameters are changed in Synesthesia. Present synethesia on a screen or projected on to the table.
     - in the corners of a squash court and project the image(s) onto the wall(s), floor and/or ceiling. Now moving around the court has an impact on the game as well
 
-- Detect impact point
+- Detect impact point / object movement
   - Use a camera for object tracking, e.g. a Pixy cam. Map the imapct to x/y properties in synesthesia. And the distance to the wall as size. 
 
 - Use midi controller, e.g AKAI MPD218, ribn (iOS/ipadOS)
