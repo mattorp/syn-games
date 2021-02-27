@@ -116,11 +116,6 @@ Examples of usage:
   - Concepts w. pencil (ipadOS)
   - Syphon Recorder (mac)
 
-## Videos
-These are placeholder. New ones will replcae them soon
+### Videos
 
-https://youtu.be/KRB6ZPVpBxg
-
-https://youtu.be/1zvDIPuOZ5A
-
-https://youtu.be/R23TcANc-0w
+[Object tracking](https://youtu.be/KRB6ZPVpBxg)
