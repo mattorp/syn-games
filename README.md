@@ -46,6 +46,39 @@ For mapping use the selectedChannelIndex parameter as shown above. This lets you
 ### Video
 [DRAFT]('./Video_README_DRAFT.md')
 
+#### When video is set up
+
+In host
+
+```bash
+cd ~/github/syn-games
+python3 midi_server.py
+```
+
+Start Synesthesia, and map notes to controls. Notes are indexed as 100 + offset * object_index + notes_per_object 
+
+offset example: x = 0, y = 1, size = 2
+
+Then notes_per_object is 3
+
+```
+python3 map_note.py [note]
+```
+
+Then start the Pixy VM
+```
+vboxmanage startvm pixy --type headless
+sudo ssh pixy@127.0.0.1 -p 2222
+```
+
+(re)connect the physical usb to Pixy
+
+In the VM
+```
+cd ~/pixy2/build/midi
+sudo python3 pixy_to_midi.py
+```
+
 ## Usage
 Provide sounds for each microphone to trigger the MIDI notes.
 
