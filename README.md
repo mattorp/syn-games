@@ -43,6 +43,9 @@ Go to MIDI settings -> Devices in Synesthesia and refresh.
 
 For mapping use the selectedChannelIndex parameter as shown above. This lets you map individual channels/microphones to each MIDI mapping.
 
+### Video
+[DRAFT]('./Video_README_DRAFT.md')
+
 ## Usage
 Provide sounds for each microphone to trigger the MIDI notes.
 
