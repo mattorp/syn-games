@@ -1,4 +1,5 @@
 ## Runs audio capture and midi server
+## TODO: Update to include all services. Users should be able to specificy which services to start, or leave at default to start all.
 
 import os
 import subprocess
