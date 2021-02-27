@@ -86,17 +86,25 @@ Provide sounds for each microphone to trigger the MIDI notes.
 # Examples
 
 Examples of usage: 
+- Track sound at various points
 - Position microphones
   - around a table. As players drum on the table, various parameters are changed in Synesthesia. Present synethesia on a screen or projected on to the table.
   - in the corners of a squash court and project the image(s) onto the wall(s), floor and/or ceiling. Now moving around the court has an impact on the game as well
 
-- Detect impact point (not yet implemented)
-  - Use a camera for object tracking, e.g. a Pixy cam. Map the imapct to x/y properties in synesthesia.
+- Detect impact point
+  - Use a camera for object tracking, e.g. a Pixy cam. Map the imapct to x/y properties in synesthesia. And the distance to the wall as size. 
 
-This extends to various sports and games. 
+- Use midi controller, e.g AKAI MPD218, ribn (iOS/ipadOS)
+
+- Draw the background. E.g. by recording a physical paper or other drawing surfaces. Or by routing Concepts(.app) into Synesthesia -- for this use:
+  - AirServer (mac)
+  - Concepts w. pencil (ipadOS)
+  - Syphon Recorder (mac)
 
 ## Videos
 These are placeholder. New ones will replcae them soon
+
+https://youtu.be/KRB6ZPVpBxg
 
 https://youtu.be/1zvDIPuOZ5A
 
