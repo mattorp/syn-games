@@ -7,6 +7,9 @@ import sys
 import requests
 import numpy
 
+HOST = '0.0.0.0'
+PORT = '5002'
+
 FORMAT                   = pyaudio.paInt16
 RATE                     = 44100
 CHUNK                    = 1024
@@ -63,7 +66,7 @@ def capture_audio(
         velocity   = prevent_overflow(maxLevel)
         note       = 60 + i
         print(velocity)
-        requests.post("http://127.0.0.1:5000/",
+        requests.post('http://{}:{}/'.format(HOST,PORT),
                     data={'note': note, 'velocity': velocity})
 
     for _ in range(0, int(RATE/CHUNK*seconds)):
