@@ -61,6 +61,7 @@ offset example: x = 0, y = 1, size = 2
 
 Then notes_per_object is 3
 
+Map the notes. For two objects with three notes, do so for 100-105
 ```
 python3 map_note.py [note]
 ```
