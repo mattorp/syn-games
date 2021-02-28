@@ -44,9 +44,9 @@ while 1:
   max_found = max(max_found, count)
 
   # Set size to zero, to zoom out unfound objects. 
-  for i in range(0, max_found):
-     requests.post('http://{}:{}/'.format(HOST, PORT),
-                   data={'note': get_note(SIZE, i), 'velocity': 0})
+  # for i in range(0, max_found):
+  #    requests.post('http://{}:{}/'.format(HOST, PORT),
+  #                  data={'note': get_note(SIZE, i), 'velocity': 0})
 
   if count > 0:
     frame = frame + 1
