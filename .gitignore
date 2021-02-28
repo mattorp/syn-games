@@ -133,3 +133,5 @@ tempCodeRunnerFile.py
 
 snapshots/
 latest-snapshot/
+
+.DS_Store
