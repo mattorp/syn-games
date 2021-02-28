@@ -96,7 +96,13 @@ In the VM (ssh)
 ```
 cd ~/pixy2/build/midi
 sudo python3 pixy_to_midi.py
-``` 
+```2
+
+### Bugs
+
+If the position in synesthesia is not updated:
+- Try to restart Synesthesia
+- Make sure that the correct variables are used in the .glsl file
 
 ## Examples
 
