@@ -5,6 +5,8 @@ from pixy import *
 import requests
 from time import sleep
 
+SCALE_SIZE=1/2
+
 HOST = '192.168.0.104'
 PORT = '5002'
 
@@ -54,7 +56,7 @@ while 1:
       block = blocks[i]
       x = round(block.m_x/2.45)
       y = round(block.m_y/1.66)
-      size = round(get_size(block.m_width, block.m_height)/3)
+      size = round(get_size(block.m_width, block.m_height)*SCALE_SIZE)
       print(get_note(X, i), x, y, size)
       sleep(.017) 
 
