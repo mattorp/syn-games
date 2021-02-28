@@ -116,6 +116,8 @@ PYTHONPATH=/Library/Frameworks/Python.Framework/Versions/3.9/lib/Python3.9/site-
 
 #### Using btt
 
+[BetterTouchTool](https://folivora.ai)
+
 Note that this can be unstable! But it allows some nice functionality.
 see [btt.js](btt.js) 
 
