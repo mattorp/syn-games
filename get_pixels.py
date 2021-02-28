@@ -1,7 +1,7 @@
 from glob import iglob
 from PIL import Image
 import shutil
-from subprocess import call
+import os
 
 HOST = '127.0.0.1'
 PORT='12345'
@@ -27,8 +27,12 @@ s0 = str(round((black+white)/10000))
 s1 = str(round(other/10000))
 print(s0,s1)
 
-call(
-    """node -e 'require("./btt.js").announceWinner([{},{}])' """.format(s0, s1), shell=True)
+os.system("open 'http://127.0.0.1:8080?{}-{}'".format(s0,s1))
+
+# !Calling btt is very unstable atm
+# os.system(
+#     """node -e 'require("./btt.js").announceWinner([{},{}])' """.format(s0, s1), shell=True)
+
 
 shutil.move(last_file, './snapshots/')
 
