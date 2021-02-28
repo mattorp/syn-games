@@ -114,14 +114,14 @@ PYTHONPATH=/Library/Frameworks/Python.Framework/Versions/3.9/lib/Python3.9/site-
 
 ### Show score
 
+Use snap_syn.py -- which currently counts the white+black (player 1) pixels and compares them with all other colors (player 2). In this game mode, the players fight to clear or fill the screen with color. This is just one of many ways to get the score from a game.
+
 #### Using btt
 
 [BetterTouchTool](https://folivora.ai)
 
 Note that this can be unstable! But it allows some nice functionality.
 see [btt.js](btt.js) 
-
-
 
 ## Examples
 
