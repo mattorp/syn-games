@@ -104,6 +104,23 @@ If the position in synesthesia is not updated:
 - Try to restart Synesthesia
 - Make sure that the correct variables are used in the .glsl file
 
+## Track score
+
+For BTT python scripts add this to environment variables under exectute shell script
+
+```
+PYTHONPATH=/Library/Frameworks/Python.Framework/Versions/3.9/lib/Python3.9/site-packages
+```
+
+### Show score
+
+#### Using btt
+
+Note that this can be unstable! But it allows some nice functionality.
+see [btt.js](btt.js) 
+
+
+
 ## Examples
 
 Examples of usage: 
