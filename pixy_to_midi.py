@@ -4,11 +4,14 @@ from ctypes import *
 from pixy import *
 import requests
 from time import sleep
+from dotenv import load_dotenv
+from os import getenv
+load_dotenv()
 
 SCALE_SIZE=1/2
 
-HOST = '192.168.0.104'
-PORT = '5002'
+HOST = getenv('MIDI_SERVER_HOST')
+PORT = getenv('MIDI_SERVER_PORT')
 
 pixy.init ()
 pixy.change_prog ('color_connected_components');

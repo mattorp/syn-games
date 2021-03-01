@@ -2,9 +2,9 @@
 
 from simplecoremidi import send_midi
 from flask import Flask, request
-
-HOST = '0.0.0.0'
-PORT = '5002'
+from dotenv import load_dotenv
+from os import getenv
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -15,5 +15,7 @@ def result():
     send_midi((0xb0, note, velocity))
     print(note, velocity)
     return '{},{}'.format(note, velocity)
-
-app.run(host='0.0.0.0', port='5002')
+    
+app.run(
+    host=getenv('MIDI_SERVER_HOST'),
+    port=getenv('MIDI_SERVER_PORT'))

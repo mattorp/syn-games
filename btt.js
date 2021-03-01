@@ -2,9 +2,10 @@ const { Btt } = require('btt');
 const http = require('http')
 const sleep = require('await-sleep')
 
+
 const btt = new Btt({
-  domain: '127.0.0.1',
-  port: 56556,
+  domain: process.env.BTT_SERVER_HOST,
+  port: process.env.BTT_SERVER_PORT,
   protocol: 'http',
   version: '2.525',
 });
