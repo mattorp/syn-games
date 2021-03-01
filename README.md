@@ -118,6 +118,9 @@ If the position in synesthesia is not updated:
 - Try to restart Synesthesia
 - Make sure that the correct variables are used in the .glsl file
 
+If pixy_to_midi returns nothing, and no errors:
+- Make sure that the cam registers objects
+
 ## Track score
 
 For BTT python scripts add this to environment variables under exectute shell script
