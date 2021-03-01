@@ -8,6 +8,20 @@ A primary goal is to let everyone quickly design new games. The user experience 
 
 __NOTE:__ The project is still in very early stage, and is not documented well yet. Do only try to use this now if you don't mind working out most problems yourself, and find documentation elsewhere. 
 
+## Environment variables
+
+.env should contain -- values are examples:
+```
+MIDI_SERVER_HOST=192.168.0.104
+MIDI_SERVER_PORT=5002
+BTT_SERVER_HOST=127.0.0.1
+BTT_SERVER_PORT=56556
+BTT_SNAP_SYN='btt://execute_assigned_actions_for_trigger/?uuid=12D19A27-4D74-4D7F-91BA-49B57B977828'
+OVERLAY_SERVER_HOST=192.168.0.104
+OVERLAY_SERVER_PORT=5010
+OVERLAY_SERVER_PATH=overlay
+```
+
 ## Synesthesia
 Install and open Synesthesia from https://www.synesthesia.live
 
