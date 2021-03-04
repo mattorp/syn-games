@@ -73,7 +73,11 @@ python3 capture_audio.py seconds=3600 index=7 channelCount=3 selectedChannelInde
 
 selectedChannelIndex is optional, if not provided it uses all channel inputs.
 
+To find index and channelCount:
 
+```
+python3 get_audio_info.py
+```
 
 ## Video
 [DRAFT]('./Video_README_DRAFT.md')
