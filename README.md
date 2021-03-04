@@ -117,6 +117,7 @@ sudo python3 pixy_to_midi.py
 If the position in synesthesia is not updated:
 - Try to restart Synesthesia
 - Make sure that the correct variables are used in the .glsl file
+- Make sure the circlses are used in the return functions
 
 If pixy_to_midi returns nothing, and no errors:
 - Make sure that the cam registers objects
