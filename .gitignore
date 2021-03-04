@@ -135,3 +135,5 @@ snapshots/
 latest-snapshot/
 
 .DS_Store
+
+**/ignore/**
