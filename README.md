@@ -110,7 +110,7 @@ In the VM (ssh)
 ```
 cd ~/pixy2/build/midi
 sudo python3 pixy_to_midi.py
-```2
+```
 
 ### Bugs
 
