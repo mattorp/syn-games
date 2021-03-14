@@ -1,0 +1,25 @@
+{
+  "name": "syn-games",
+  "version": "0.0.1",
+  "description": "synesthesia games",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mattorp/syn-games.git"
+  },
+  "author": "Mathias Torp",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mattorp/syn-games/issues"
+  },
+  "homepage": "https://github.com/mattorp/syn-games#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0"
+  },
+  "dependencies": {
+    "babel-preset-env": "^1.7.0"
+  }
+}
