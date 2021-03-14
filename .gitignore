@@ -137,3 +137,4 @@ latest-snapshot/
 .DS_Store
 
 **/ignore/**
+.vscode/settings.json
