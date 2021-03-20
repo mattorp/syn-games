@@ -17,9 +17,14 @@
   },
   "homepage": "https://github.com/mattorp/syn-games#readme",
   "devDependencies": {
-    "babel-cli": "^6.26.0"
+    "babel-cli": "^6.26.0",
+    "eslint": "^7.22.0"
   },
   "dependencies": {
+    "babel-preset-env": "^1.7.0",
+    "is-integer": "^1.0.7",
+    "is-number": "^7.0.0",
     "nodemon": "^2.0.7",
+    "sleep-promise": "^9.1.0"
   }
 }
