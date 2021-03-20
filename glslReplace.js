@@ -5,14 +5,13 @@
 const fs = require('fs')
 const { round } = Math
 
-const throwIfLengthsDontMatch = ({ factor, startCondition, resetValues }) => {
-  if ([factors, startCondition, resetValues].some((v, _, a) => {
-    return v.length !== a[0].length
-  }
-  )) {
-    throw new Error(`factors, startCondition and resetValues length must match
+const differentLengths = (arr) => arr.some((v, _, a) => v.length !== a[0].length)
+
+const throwIfDifferentLengths = ({ factors, startCondition, finalValues }) => {
+  if (differentLengths([factors, startCondition, finalValues])) {
+    throw new Error(`factors, startCondition and finalValues length must match
     factors           : ${factors.length}
-    resetValues       : ${resetValues.length}
+    finalValues       : ${finalValues.length}
     startCondition    : ${startCondition.length}
     `)
   }
@@ -56,7 +55,8 @@ const replace = ({ path, searchValue, replaceValue }) => {
   fs.writeFileSync(path, newString)
 }
 
-const getSearchValue = ({ type, uniform }) => new RegExp(`${type} ${uniform}\ ?=\ ?${type}\(.+\);`)
+const getSearchValue = ({ type, uniform }) =>
+  new RegExp(`${type} ${uniform}\ ?=.+;`)
 
 const getReplaceValueFn = ({ type, uniform }) => {
   const int = (i) => `${i}`
@@ -71,83 +71,36 @@ const getReplaceValueFn = ({ type, uniform }) => {
 }
 
 const getUpdatedValues = ({ i, factors, startCondition }) =>
-  factors.map?.((factor, j) => factor * i + startCondition[j]) || factors * i + startCondition
+  factors.map?.((factor, j) => factor * i + startCondition[j])
+  || factors * i + startCondition
 
-const run = async ({ filepath, uniform, resetValues, factors, startCondition, fps, iterations }) => {
-  throwIfLengthsDontMatch({ factors, startCondition, resetValues })
-
-  const path = __dirname + filepath
+const itterate = async ({ itterations, factors, startCondition, path, searchValue, getReplaceValue, fps }) => {
   const sleepFor = 1000 / fps
-  const type = getType(factors)
-  const searchValue = getSearchValue({ type, uniform })
-  const getReplaceValue = getReplaceValueFn({ type, uniform })
 
-  if (resetValues) {
-    const replaceValue = getReplaceValueFn({ type, uniform })(resetValues)
-    replace({ path, searchValue, replaceValue })
-  }
-
-  for (let i = 0; i < iterations; i++) {
+  for (let i = 0; i < itterations; i++) {
     const updatedValues = getUpdatedValues({ i, factors, startCondition })
     const replaceValue = getReplaceValue(updatedValues)
     replace({ path, searchValue, replaceValue })
     await sleep(sleepFor)
   }
+
 }
 
-const deviation = 0.0000000001
+const run = async ({ filepath, uniform, finalValues, factors, startCondition, fps, itterations }) => {
+  throwIfDifferentLengths({ factors, startCondition, finalValues })
 
-module.exports = { run, deviation }
+  const path = __dirname + filepath
+  const type = getType(factors)
+  const searchValue = getSearchValue({ type, uniform })
+  const getReplaceValue = getReplaceValueFn({ type, uniform })
 
-// * Examples below. 
-// TODO Comment out or remove the following when not testing
-throw new Error('Make sure to remove the following lines if calling run outside thhs file! Comment me out if using the examples below\n')
+  await itterate({ itterations, factors, startCondition, path, searchValue, getReplaceValue, fps })
 
-const vec = [
-  null, null,
-  {
-    resetValues: [1, 2],
-    factors: [1, 2],
-    startCondition: [1, 2],
-  },
-  {
-    resetValues: [1, 2, 3],
-    factors: [1, 2, 3],
-    startCondition: [1, 2, 3],
-  },
-  {
-    resetValues: [1, 2, 3, 1],
-    factors: [1, 2, 3, 3],
-    startCondition: [1, 2, 3, 2],
+
+  if (finalValues) {
+    const replaceFinal = getReplaceValueFn({ type, uniform })(finalValues)
+    replace({ path, searchValue, replaceValue: replaceFinal })
   }
-]
-
-const float = {
-  resetValues: 2 + deviation,
-  factors: 2 + deviation,
-  startCondition: 2 + deviation,
 }
 
-const int = {
-  resetValues: 2,
-  factors: 2,
-  startCondition: 2,
-}
-
-const {
-  resetValues,
-  factors,
-  startCondition,
-} =
-  // int
-  // float
-  vec[4]
-// vec[3]
-// vec[4]
-
-const iterations = 800
-const fps = 600
-const filepath = '/scenes/2d-pong.synscene/main.glsl'
-const uniform = 'u_circle_0'
-
-run({ filepath, uniform, resetValues, factors, startCondition, iterations, fps })
+module.exports = { run }
