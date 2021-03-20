@@ -5,7 +5,7 @@
 const fs = require('fs')
 const sleep = require('sleep-promise')
 const { round } = Math
-const { throwIfNotReplaced, throwIfDifferentLengths, throwIfMalformedFactors } = require('./errors')
+const { throwIfNotReplaced, throwIfDifferentLengths, throwIfMalformedFactors, throwIfNotAllAreNumbers } = require('./errors')
 const { removeNumber } = require("../util/strings")
 const { getUniformType } = require("../util/uniforms")
 
@@ -25,18 +25,20 @@ const replaceUniformValue = ({ path, searchValue, replaceValue }) => {
   fs.writeFileSync(path, newGlsl)
 }
 
-const updatedValues = ({ factors, i, startCondition }) => factors * i + startCondition
+const updatedValues = ({ factor, i, startCondition }) => factor * i + startCondition
 
 const getUpdatedValues = ({ i, factors, startCondition }) =>
-  factors.map?.((factor, j) => updatedValues({ factors, i, startCondition: startCondition[j] }))
-  || updatedValues({ factors, i, startCondition })
+  factors.map?.((factor, j) => updatedValues({ factor, i, startCondition: startCondition[j] }))
+  || updatedValues({ factor: factors, i, startCondition })
 
 const applyUpdates = async ({ itterations, factors, startCondition, path, searchValue, getReplaceValue, fps }) => {
   const sleepFor = 1000 / fps
 
   for (let i = 0; i < itterations; i++) {
+
     const updatedValues = getUpdatedValues({ i, factors, startCondition })
     const replaceValue = getReplaceValue(updatedValues)
+
     replaceUniformValue({ path, searchValue, replaceValue })
     await sleep(sleepFor)
   }
@@ -60,9 +62,12 @@ const run = async ({ filepath, uniform, finalValues, factors, startCondition, fp
 
   throwIfDifferentLengths({ factors, startCondition, finalValues })
   throwIfMalformedFactors(factors)
+  throwIfNotAllAreNumbers([factors, startCondition, finalValues])
 
   const path = __dirname + filepath
   const type = getUniformType(factors)
+
+
 
   const searchValue = getUniformSearchValue({ type, uniform })
   const getReplaceValue = getReplaceValueFn({ type, uniform })

@@ -3,6 +3,15 @@ const isNumber = require('is-number')
 const differentProps = ({ arr, key }) => arr.some((v, _, a) => v[key] !== a[0][key])
 const differentLengths = (arr) => differentProps({ arr, key: 'length' })
 
+const throwIfNotANumber = (e) => {
+  if (!isNumber(e)) {
+    throw new Error(`${e} is not a number`)
+  }
+}
+
+const throwIfNotAllAreNumbers = (arr) => arr.flat(Infinity).map(throwIfNotANumber)
+
+
 const throwIfDifferentLengths = ({ factors, startCondition, finalValues }) => {
   if (differentLengths([factors, startCondition, finalValues])) {
     throw new Error(`factors, startCondition and finalValues length must match
@@ -39,5 +48,7 @@ module.exports = {
   throwIfNotReplaced,
   throwIfDifferentLengths,
   throwIfNotReplaced,
-  throwIfMalformedFactors
+  throwIfMalformedFactors,
+  throwIfNotANumber,
+  throwIfNotAllAreNumbers
 }
