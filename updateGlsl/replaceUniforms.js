@@ -43,7 +43,7 @@ const applyUpdates = async ({ itterations, factors, startCondition, path, search
 }
 
 const getUniformSearchValue = ({ type, uniform }) =>
-  new RegExp(`${type} ${uniform}\ ?=.+;`)
+  new RegExp(`${type} ${uniform}\ +=.+;`)
 
 const replaceByType = {
   int: (i) => `${i}`,
