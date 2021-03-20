@@ -45,11 +45,11 @@ const applyUpdates = async ({ itterations, factors, startCondition, path, search
 }
 
 const getUniformSearchValue = ({ type, uniform }) =>
-  new RegExp(`${type} ${uniform}\ +=.+;`)
+  new RegExp(`${type} ${uniform}\\ +=.+;`)
 
 const replaceByType = {
   int: (i) => `${i}`,
-  float: (i) => `${i}.`,
+  float: (i) => `${i}`,
   vec: (vec) => `vec${vec.length}( ${vec.reduce((acc, v) => `${acc}, ${v}`)})`
 }
 
@@ -66,8 +66,6 @@ const run = async ({ filepath, uniform, finalValues, factors, startCondition, fp
 
   const path = __dirname + filepath
   const type = getUniformType(factors)
-
-
 
   const searchValue = getUniformSearchValue({ type, uniform })
   const getReplaceValue = getReplaceValueFn({ type, uniform })
