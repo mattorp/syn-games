@@ -1,102 +1,112 @@
 // :::
 const fs = require('fs')
-const { updateUniforms } = require('../../glslCanvsUniforms')
-updateUniforms({
-  statics: {
-    u_circle_0: [0, 0, 0],
-    u_circle_1: [0, 0, 0],
-    u_circle_2: [0, 0, 0],
-    u_circle_3: [0, 0, 0],
+const { sqrt } = Math
+const { runAll } = require('../../updateGlsl/replaceUniforms')
 
-  }
-})
 
-function Circle({ x, y, r, vx, vy }) {
-  this.x = x
-  this.y = y
-  this.r = r
-  this.vx = vx
-  this.vy = vy
-  this.isColliding = false
-
-  this.updateVelocity = ({ vx, vy }) => {
-    this.vx = vx
-    this.vy = vy
-  }
-
-  this.updateRadius = (dr) => {
-    this.r += dr
-  }
-
-  this.updatePosition = () => {
-    this.x += this.vx
-    this.y += this.vy
-  }
-}
-
-const circleIntersect = (a, b) => {
+const getCirclesIntersect = (a, b) => {
   // When the distance is smaller or equal to the sum
   // of the two radius, the circles touch or overlap
-  const squareDistance = (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y)
-  return squareDistance <= ((a.r + b.r) * (a.r + b.r))
+
+  //* [x,y,r]
+  const squareDistance = (a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1])
+  return squareDistance <= ((a[2] + b[2]) * (a[2] + b[2]))
 }
 
-const collisionVector = (a, b) => ({ x: b.x - a.x, y: b.y - a.y })
+const getCollisionVector = (a, b) => ([b[0] - a[0], b[1] - a[1]])
 
-const circleStartConditions = [
-  { r: 40, x: 300, y: 300, vx: 3, vy: 3 },
-  { r: 40, x: 0, y: 0, vx: 4, vy: 2 },
-  { r: 40, x: 1000, y: 1000, vx: -4, vy: -5 },
-  { r: 40, x: 0, y: 0, vx: 8, vy: 2 },
+const getDistance = (a, b) => sqrt((b[0] - a[0]) * (b[0] - a[0]) + (b[1] - a[1]) * (b[1] - a[1]));
 
-]
+const getCollisionVectorNorm = (vec, distance) => ([vec[0] / distance, vec[1] / distance])
 
-const circles = circleStartConditions.map((c) =>
-  new Circle(c))
+const getRelativeVelocity = (a, b) => ([a[0] - b[0], a[1] - b[1]])
 
-const sleep = async ms =>
-  await new Promise((resolve) => setTimeout(resolve, ms))
+const getSpeed = (relativeVelocity, collisionVectorNorm) => relativeVelocity[0] * collisionVectorNorm[0] + relativeVelocity[1] * collisionVectorNorm[1]
 
-const detectCollisions = () => {
-  circles.forEach((c1) => {
-    c1.isColliding = false
-    circles.forEach((c2) => {
-      if (c1 !== c2) {
-        if (circleIntersect(c1, c2)) {
-          c1.isColliding = true
-          c2.isColliding = true
+const getNewFactors = (factors, speed, collisionVectorNorm) => {
+  const newFactors = ([
+    [factors[0][0] - speed * collisionVectorNorm[0], factors[0][1] - speed * collisionVectorNorm[1]],
+    [factors[1][0] + speed * collisionVectorNorm[0], factors[1][1] + speed * collisionVectorNorm[1]]
+  ])
+
+  return newFactors
+}
+
+const getCollisions = (circles) => {
+  let collisons = []
+  let count = 0
+  circles.forEach((c1, i) => {
+    collisons[i] = []
+    circles.forEach((c2, j) => {
+      if (c1 !== c2 && !collisons[j]?.includes(i)) {
+        if (getCirclesIntersect(c1, c2)) {
+          collisons[i] = [...collisons[i], j]
+          count++
         }
       }
     })
   })
-}
 
-const itterations = new Array(100).fill(0)
-const itterate = async () => {
-  let i = 0
-  let json = {}
-  for (const _ in itterations) {
-    circles.forEach(({ updatePosition }) => {
-      updatePosition()
-    })
-    await sleep(500)
-
-    detectCollisions()
-    const arr = circles.map(({ x, y, r }, i) => ({ ['u_circle_' + i]: [x, y, r] }))
-    var mapped = arr.map(item => ({ [Object.keys(item)[0]]: Object.values(item)[0] }));
-    var newObj = Object.assign({}, ...mapped);
-    updateUniforms({ statics: newObj, json });
-    i++
+  if (count > 0) {
   }
+  return collisons
 }
 
-const run = async () => {
-  console.time('fn')
-  await itterate()
-  console.timeEnd('fn')
+const shared = {
+  itterations: 2,
+  fps: 60,
+  filepath: '/../scenes/2d-pong.synscene/main.glsl',
 }
 
-run()
+const startCondition = (index) => ([(index + 2) * 200 + index, (index + 2) * 200, 70])
+const factors = (index) => ([(index % 2 === 0 ? 1 : -1) * 1 * (index % 8), (index % 2 === 0 ? 1 : -1) * 1 * (index % 8), 0])
+
+const circles = [
+  ...new Array(9).fill(0).map((_, index) => ({
+    ...shared,
+    uniform: 'u_circle_' + index,
+    startCondition: startCondition(index),
+    factors: factors(index),
+  })),
+]
+const bounce = (a, b, conservation = 1) => conservation * Math.max(
+  sqrt(Math.abs(a.factors[0]) + Math.abs(a.factors[1])),
+  sqrt(Math.abs(b.factors[0]) + Math.abs(b.factors[1])),
+)
+
+const main = async (circles) => {
+  const updated = await runAll(circles)
+  const collisions = getCollisions(updated)
+
+  let updatedFactors = circles.map(({ factors }) => [factors[0], factors[1]])
+  let checked = []
+  collisions.forEach((e, i) => e.forEach(j => {
+    collided = true
+    const vec = getCollisionVector(updated[i], updated[j])
+    const distance = getDistance(updated[i], updated[j])
+    const collisionVectorNorm = getCollisionVectorNorm(vec, distance)
+    const relativeVelocity = getRelativeVelocity(circles[i].factors, circles[j].factors)
+
+    let speed = getSpeed(relativeVelocity, collisionVectorNorm)
+    if (speed < 0.001) {
+      speed = bounce(circles[i], circles[j], 1)
+    }
+    const newFactors = getNewFactors([circles[i].factors, circles[j].factors], speed, collisionVectorNorm)
+
+    updatedFactors[i] = newFactors[0]
+    updatedFactors[j] = newFactors[1]
+
+
+  }))
+  const newCircles = [circles[0], ...circles.map((c, i) => ({ ...c, startCondition: updated[i], factors: [...updatedFactors[i], circles[i].factors[2]], })).splice(1, 7), circles[8]]
+
+
+  main(newCircles)
+
+}
+
+main(circles)
 
 // :::
+
 

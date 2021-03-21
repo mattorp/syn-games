@@ -33,15 +33,16 @@ const getUpdatedValues = ({ i, factors, startCondition }) =>
 
 const applyUpdates = async ({ itterations, factors, startCondition, path, searchValue, getReplaceValue, fps }) => {
   const sleepFor = 1000 / fps
-
+  let updatedValues
   for (let i = 0; i < itterations; i++) {
 
-    const updatedValues = getUpdatedValues({ i, factors, startCondition })
+    updatedValues = getUpdatedValues({ i, factors, startCondition })
     const replaceValue = getReplaceValue(updatedValues)
 
     replaceUniformValue({ path, searchValue, replaceValue })
     await sleep(sleepFor)
   }
+  return updatedValues
 }
 
 const getUniformSearchValue = ({ type, uniform }) =>
@@ -50,7 +51,7 @@ const getUniformSearchValue = ({ type, uniform }) =>
 const replaceByType = {
   int: (i) => `${i}`,
   float: (i) => `${i}`,
-  vec: (vec) => `vec${vec.length}( ${vec.reduce((acc, v) => `${acc}, ${v}`)})`
+  vec: (vec) => `vec${vec.length}( ${vec.reduce((acc, v, i) => `${acc}, ${v / (i === 2 ? 2000 : 1)}`)})`
 }
 
 const getReplaceWith = ({ type, vars }) => replaceByType[removeNumber(type)](vars)
@@ -70,7 +71,7 @@ const run = async ({ filepath, uniform, finalValues, factors, startCondition, fp
   const searchValue = getUniformSearchValue({ type, uniform })
   const getReplaceValue = getReplaceValueFn({ type, uniform })
 
-  await applyUpdates({ itterations, factors, startCondition, path, searchValue, getReplaceValue, fps })
+  const updatedValue = await applyUpdates({ itterations, factors, startCondition, path, searchValue, getReplaceValue, fps })
 
   if (finalValues) {
     const replaceValueFinal = getReplaceValueFn({ type, uniform })(finalValues)
@@ -78,12 +79,10 @@ const run = async ({ filepath, uniform, finalValues, factors, startCondition, fp
   }
 
   shouldLog && console.log('End: ' + uniform)
+  return updatedValue
 }
 
-const runAll = async (arr) => {
-  await Promise.all(arr.map(run))
-  console.log('Done replacing uniforms')
-}
+const runAll = async (arr) => Promise.all(arr.map(run))
 
 
 module.exports = { run, deviation, runAll }

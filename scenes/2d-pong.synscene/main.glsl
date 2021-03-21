@@ -1,57 +1,51 @@
 precision mediump float;
 
 uniform vec2 u_resolution;
-uniform vec2 u_mouse;
-uniform float u_time;
 
-// uniform vec3 u_circle_0;
-// uniform vec3 u_circle_1;
-// uniform vec3 u_circle_2;
-// uniform vec3 u_circle_3;
+vec3 u_circle_0 = vec3( 400, 400, 0.035);
+vec3 u_circle_1 = vec3( 670.4744409061373, 405.62139787706496, 0.035);
+vec3 u_circle_2 = vec3( 709.9851648520955, 585.9752336407856, 0.035);
+vec3 u_circle_3 = vec3( 857.1917269492913, 692.495759386765, 0.035);
+vec3 u_circle_4 = vec3( 297.9849569045699, 1007.687635659031, 0.035);
+vec3 u_circle_5 = vec3( 1559.109598193742, 1240.2223255952892, 0.035);
+vec3 u_circle_6 = vec3( 1236.6686258185453, 1627.2609449151553, 0.035);
+vec3 u_circle_7 = vec3( 2282.0720318397744, 1896.122197584244, 0.035);
+vec3 u_circle_8 = vec3( 2008, 2000, 0.035);
 
-// int u_circle_0 = 2;
-// float u_circle_0 = 2.0000000001;
-// vec2 u_circle_0 = vec2( 1, 2);
-vec3 u_circle_0 = vec3( 300, 600, 10);
-// vec4 u_circle_0 = vec4( 1, 2, 3, 1);
-
-#define rx 1./min(u_resolution.x,u_resolution.y)
 #define uv gl_FragCoord.xy/u_resolution.xy
-#define st coord(gl_FragCoord.xy)
-#define mx coord(u_mouse)
-
-/* Pixel unit conversion function */
-float size(in float x) {
-  return x * rx;
-}
 
 float inside_circle(in vec3 circle) {
   vec2 dist = circle.xy / u_resolution - uv.xy;
   dist.x *= u_resolution.x / u_resolution.y;
 
-  float mouse_pct = length(dist);
-  return step(mouse_pct, size(circle.z));
+  float len = length(dist);
+  return step(len, circle.z);
 }
 
 vec4 getMain(void) {
   vec3 color;
 
-  color += inside_circle(u_circle_0);
-  // color += inside_circle(u_circle_1);
-  // color += inside_circle(u_circle_2);
-  // color += inside_circle(u_circle_3);
+  color += inside_circle(u_circle_0) * vec3(1, 0, 0);
+  color += inside_circle(u_circle_1) * vec3(1, 1, 0);
+  color += inside_circle(u_circle_2) * vec3(1, 1, 1);
+  color += inside_circle(u_circle_3) * vec3(0, 0, 1);
+  color += inside_circle(u_circle_4) * vec3(0, 1, 0);
+  color += inside_circle(u_circle_5) * vec3(0, 1, 1);
+  color += inside_circle(u_circle_6) * vec3(1, 0, 1);
+  color += inside_circle(u_circle_7) * vec3(1, 1, 1);
+  color += inside_circle(u_circle_8) * vec3(1, 0, 0);
 
   return vec4(color, 1);
 }
 
 void main() {
-  for(int i = 0; i < 9; i++) {
-    p[i] = vec2(0.0);
-  }
   gl_FragColor = getMain();
 }
 
 // :::
 vec4 renderMain() {
+  return getMain();
+}
+vec4 Main() {
   return getMain();
 }
