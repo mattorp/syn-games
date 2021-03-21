@@ -9,11 +9,11 @@ uniform float u_time;
 // uniform vec3 u_circle_2;
 // uniform vec3 u_circle_3;
 
-// int u_circle_0    = 2;
-// float u_circle_0  = 2.0000000001.;
-// vec2 u_circle_0   = vec2( 1, 2);
-vec3 u_circle_0 = vec3( NaN, NaN, NaN);
-// vec4 u_circle_0   = vec4( 1, 2, 3, 1);
+// int u_circle_0 = 2;
+// float u_circle_0 = 2.0000000001;
+// vec2 u_circle_0 = vec2( 1, 2);
+vec3 u_circle_0 = vec3( 300, 600, 10);
+// vec4 u_circle_0 = vec4( 1, 2, 3, 1);
 
 #define rx 1./min(u_resolution.x,u_resolution.y)
 #define uv gl_FragCoord.xy/u_resolution.xy
