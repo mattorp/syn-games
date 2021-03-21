@@ -1,6 +1,6 @@
 const isNumber = require('is-number')
 
-const differentProps = ({ arr, key }) => arr.some((v, _, a) => v[key] !== a[0][key])
+const differentProps = ({ arr, key }) => arr.filter(e => e).some((v, _, a) => v[key] !== a[0][key])
 const differentLengths = (arr) => differentProps({ arr, key: 'length' })
 
 const throwIfNotANumber = (e) => {
@@ -9,14 +9,14 @@ const throwIfNotANumber = (e) => {
   }
 }
 
-const throwIfNotAllAreNumbers = (arr) => arr.flat(Infinity).map(throwIfNotANumber)
+const throwIfNotAllAreNumbers = (arr) => arr.filter(e => e).flat(Infinity).map(throwIfNotANumber)
 
 
 const throwIfDifferentLengths = ({ factors, startCondition, finalValues }) => {
   if (differentLengths([factors, startCondition, finalValues])) {
     throw new Error(`factors, startCondition and finalValues length must match
     factors           : ${factors.length}
-    finalValues       : ${finalValues.length}
+    finalValues       : ${finalValues?.length}
     startCondition    : ${startCondition.length}
     `)
   }
