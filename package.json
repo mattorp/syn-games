@@ -4,6 +4,7 @@
   "description": "synesthesia games",
   "main": "index.js",
   "scripts": {
+    "dev": "echo 'setup nodemon in nodemon.json' && yarn nodemon",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
