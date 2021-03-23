@@ -1,5 +1,0 @@
-{
-  "events": {
-    "restart": "pkill -f updateGlsl/example.js || echo ''  && node updateGlsl/example.js"
-  }
-}
