@@ -143,7 +143,7 @@ Use snap_syn.py -- which currently counts the white+black (player 1) pixels and 
 [BetterTouchTool](https://folivora.ai)
 
 Note that this can be unstable! But it allows some nice functionality.
-see [btt.js](btt.js) 
+see [btt.js](src/util/btt.js) 
 
 ## Examples
 
