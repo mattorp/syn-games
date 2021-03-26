@@ -51,7 +51,7 @@ const bounce: (a: Vec2, b: Vec2, conservation?: number) => number = (a, b, conse
 const getCollisions: (circles: [Vec3, Vec3]) => number[][] = (circles) => {
   const collisions: number[][] = []
   circles.forEach((c1, i) => {
-    collisions[i] = [0]
+    collisions[i] = []
     circles.forEach((c2, j) => {
       if (c1 !== c2 && !collisions[j]?.includes(i)) {
         if (getCirclesIntersect(c1, c2)) {

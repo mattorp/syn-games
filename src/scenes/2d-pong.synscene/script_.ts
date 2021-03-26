@@ -9,7 +9,7 @@ const shared = {
 }
 
 const startCondition = (index) => ([(index + 2) * 150 + index, (index + 2) * 150, 100])
-const factors = (index) => ([(index % 2 === 0 ? -1 : 1) * 1 / 10 * (index % 8), (index % 2 === 0 ? -1 : 1) * 1 / 10 * (index % 8), 0])
+const factors = (index) => ([(index % 2 === 0 ? -1 : 1) * 1 / 1 * (index % 8), (index % 2 === 0 ? -1 : 1) * 1 / 1 * (index % 8), 0])
 
 const circles = [
   ...new Array(9).fill(0).map((_, index) => ({
