@@ -1,9 +1,6 @@
 // :::
-const {sqrt} = Math
 
 import {main} from '../../simulation/collision'
-
-
 
 const shared = {
   itterations: 2,
@@ -11,8 +8,8 @@ const shared = {
   filepath: '/../scenes/2d-pong.synscene/main.glsl',
 }
 
-const startCondition = (index) => ([(index + 2) * 200 + index, (index + 2) * 200, 70])
-const factors = (index) => ([(index % 2 === 0 ? 1 : -1) * 1 * (index % 8), (index % 2 === 0 ? 1 : -1) * 1 * (index % 8), 0])
+const startCondition = (index) => ([(index + 2) * 150 + index, (index + 2) * 150, 100])
+const factors = (index) => ([(index % 2 === 0 ? -1 : 1) * 1 / 10 * (index % 8), (index % 2 === 0 ? -1 : 1) * 1 / 10 * (index % 8), 0])
 
 const circles = [
   ...new Array(9).fill(0).map((_, index) => ({
@@ -25,6 +22,7 @@ const circles = [
 
 
 main(circles)
+
 
 // :::
 

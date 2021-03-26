@@ -8,8 +8,8 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 var fs = require('fs');
 
-var _require = require('../../glslCanvsUniforms'),
-    updateUniforms = _require.updateUniforms;
+var _require = require('../../updateGlsl/replaceUniforms'),
+  updateUniforms = _require.updateUniforms;
 
 updateUniforms({
   statics: {
@@ -25,10 +25,10 @@ function Circle(_ref) {
   var _this = this;
 
   var x = _ref.x,
-      y = _ref.y,
-      r = _ref.r,
-      vx = _ref.vx,
-      vy = _ref.vy;
+    y = _ref.y,
+    r = _ref.r,
+    vx = _ref.vx,
+    vy = _ref.vy;
 
   this.x = x;
   this.y = y;
@@ -39,7 +39,7 @@ function Circle(_ref) {
 
   this.updateVelocity = function (_ref2) {
     var vx = _ref2.vx,
-        vy = _ref2.vy;
+      vy = _ref2.vy;
 
     _this.vx = vx;
     _this.vy = vy;
@@ -147,8 +147,8 @@ var itterate = function () {
             detectCollisions();
             arr = circles.map(function (_ref6, i) {
               var x = _ref6.x,
-                  y = _ref6.y,
-                  r = _ref6.r;
+                y = _ref6.y,
+                r = _ref6.r;
               return _defineProperty({}, 'u_circle_' + i, [x, y, r]);
             });
             mapped = arr.map(function (item) {

@@ -1,1 +1,3 @@
-const script = require('./script_')
+"use strict";
+exports.__esModule = true;
+require("./script_");
