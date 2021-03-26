@@ -134,13 +134,3 @@ var main = function (circles) { return __awaiter(void 0, void 0, void 0, functio
     });
 }); };
 exports.main = main;
-// :::
-var fs = require('fs');
-var shared = {
-    itterations: 2,
-    fps: 60,
-    filepath: '/../scenes/2d-pong.synscene/main.glsl'
-};
-var startCondition = function (index) { return ([(index + 2) * 200 + index, (index + 2) * 200, 70]); };
-var factors = function (index) { return ([(index % 2 === 0 ? 1 : -1) * 1 * (index % 8), (index % 2 === 0 ? 1 : -1) * 1 * (index % 8), 0]); };
-var circles = __spreadArray([], new Array(9).fill(0).map(function (_, index) { return (__assign(__assign({}, shared), { uniform: 'u_circle_' + index, startCondition: startCondition(index), factors: factors(index) })); }));
