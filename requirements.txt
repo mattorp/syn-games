@@ -1,0 +1,7 @@
+pyaudio
+requests
+numpy
+simplecoremidi
+flask
+python-dotenv
+Pillow

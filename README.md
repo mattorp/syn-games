@@ -45,6 +45,12 @@ python3 map_note.py [note]
 
 Connect one or multiple microphones to the computer. You can use usb to jack converters for this.
 
+Te get pyaudio working you need:
+
+``` bash
+brew install portaudio
+```
+
 ### Terminal microphone access
 
 Trigger prompt:

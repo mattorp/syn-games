@@ -1,4 +1,8 @@
 {
-  "presets": ["env"]
+  "presets": [
+    "env",
+    "es2021"
+  ],
+  "sourceMaps": true,
+  "retainLines": true
 }
-
