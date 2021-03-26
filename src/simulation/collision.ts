@@ -1,5 +1,5 @@
+import {runAll} from '../updateGlsl/replaceUniforms'
 const {sqrt} = Math
-const {runAll} = require('../updateGlsl/replaceUniforms')
 
 
 type Vec2 = [number, number]

@@ -53,8 +53,8 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from) {
 };
 exports.__esModule = true;
 exports.main = void 0;
+var replaceUniforms_1 = require("../updateGlsl/replaceUniforms");
 var sqrt = Math.sqrt;
-var runAll = require('../updateGlsl/replaceUniforms').runAll;
 // Check if the circles are colliding
 var getCirclesIntersect = function (a, b) {
     // When the distance is smaller or equal to the sum
@@ -106,7 +106,7 @@ var main = function (circles) { return __awaiter(void 0, void 0, void 0, functio
     var updated, collisions, updatedFactors, newCircles;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, runAll(circles)];
+            case 0: return [4 /*yield*/, replaceUniforms_1.runAll(circles)];
             case 1:
                 updated = _a.sent();
                 collisions = getCollisions(updated);
