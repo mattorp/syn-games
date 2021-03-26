@@ -90,7 +90,7 @@ var bounce = function (a, b, conservation) {
 var getCollisions = function (circles) {
     var collisions = [];
     circles.forEach(function (c1, i) {
-        collisions[i] = [0];
+        collisions[i] = [];
         circles.forEach(function (c2, j) {
             var _a;
             if (c1 !== c2 && !((_a = collisions[j]) === null || _a === void 0 ? void 0 : _a.includes(i))) {
