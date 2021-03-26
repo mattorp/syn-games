@@ -22,6 +22,21 @@ OVERLAY_SERVER_PORT=5010
 OVERLAY_SERVER_PATH=overlay
 ```
 
+
+## VSCode 
+
+for running script from main.glsl, add to vscode settings:
+
+``` json
+    {
+        "key": "cmd+r",
+        "command": "workbench.action.terminal.sendSequence",
+        "args": {
+            "text": "tsc ${fileDirname}/run.ts && node ${fileDirname}/run\r"
+        },
+        "when": "editorLangId == glsl"
+    },
+```
 ## Synesthesia
 Install and open Synesthesia from https://www.synesthesia.live
 
