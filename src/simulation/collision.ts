@@ -48,7 +48,7 @@ const bounce: (a: Vec2, b: Vec2, conservation?: number) => number = (a, b, conse
 )
 
 // Gets an array of Vec3 for all collisions between circles at their current position and size
-const getCollisions: (circles: [Vec3, Vec3]) => number[][] = (circles) => {
+const getCollisions: (circles: Vec3[]) => number[][] = (circles) => {
   const collisions: number[][] = []
   circles.forEach((c1, i) => {
     collisions[i] = []

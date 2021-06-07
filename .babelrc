@@ -1,8 +1,15 @@
 {
   "presets": [
-    "env",
-    "es2021"
+    "@babel/preset-env"
   ],
   "sourceMaps": true,
-  "retainLines": true
+  "retainLines": true,
+  "plugins": [
+    [
+      "transform-runtime",
+      {
+        "regenerator": true
+      }
+    ]
+  ]
 }

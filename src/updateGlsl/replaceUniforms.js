@@ -85,4 +85,4 @@ const run = async ({ filepath, uniform, finalValues, factors, startCondition, fp
 const runAll = async (arr) => Promise.all(arr.map(run))
 
 
-module.exports = { run, deviation, runAll }
+module.exports = { replaceUniformValue, updatedValues, getUpdatedValues, applyUpdates, getUniformType, getReplaceWith, getReplaceValueFn, run, deviation, runAll }
