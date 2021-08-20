@@ -1,0 +1,8 @@
+requests==2.26.0
+Flask==2.0.1
+numpy==1.21.1
+Pillow==8.3.1
+pixy==1.0.3
+pyaudio==0.2.11
+python-dotenv==0.19.0
+simplecoremidi==0.3
