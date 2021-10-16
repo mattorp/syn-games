@@ -8,90 +8,179 @@
 # Getting information from Synesthesia:
 
 # A pixel is a vec4 (r, g, b, a). Since Synesthesia variables
-# are single floats we can pack 4 values into one color. We need to
-# show the pixels as rgba anyway.
+# are single floats we can pack 3 values into one color. We need to
+# show the pixels as rgba anyway. We can't use the alpha channel since it
+# affects all the other colors in the output.
 
 # To get the pixels, run a separate instance of Synesthesia, and set
-# the resolution to ceil(variable_count/4)x1 (e.g. 9x1 for 35 variables).
+# the resolution to ceil(variable_count/3)x1 (e.g. 12x1 for 35 variables).
 
 # The scene in this should output all of the values as pixels
 # constructed from the values:
 # [(r, g, b, a), (r, g, b, a), ...] =
 # [
-# (value0, value1, value2, value3),
-# (value4, value5, value6, value7),
+# (value0, value1, value2, 1.0),
+# (value4, value5, value6, 1.0),
 # ...],
-# Any remainders in the last row is set to 0.0
+# Any remainders in the last row is set to 1.0
+# If it's 0.0 for the alpha channel, we can't read any other values
 # Example: https://gist.github.com/3612040647555cc8618805303368f25d
 
-import NDIlib as ndi
-import numpy as np
-import signal
-from simplecoremidi import send_midi
-from flask import Flask, request, jsonify
-from dotenv import load_dotenv
-from os import getenv
+# import ndilib as ndin
+
+from multiprocessing import Process, Value
 from flask_cors import CORS
+from os import getenv
+from dotenv import load_dotenv
+from flask import Flask, request, jsonify
+from simplecoremidi import send_midi
+import cv2 as cv
+import ndicapy as ndi
+import numpy as np
+import time
+
+
 load_dotenv()
 
 run = True
 
 
-def kill():
+def kill(_, __):
     global run
     run = False
 
 
-signal.signal(signal.SIGINT, kill)
-signal.signal(signal.SIGTERM, kill)
+variables = [
+    'syn_Level',
+    'syn_BassLevel',
+    'syn_MidLevel',
+    'syn_MidHighLevel',
+    'syn_HighLevel',
+    'syn_Hits',
+    'syn_BassHits',
+    'syn_MidHits',
+    'syn_MidHighHits',
+    'syn_HighHits',
+    'syn_Time',
+    'syn_BassTime',
+    'syn_MidTime',
+    'syn_MidHighTime',
+    'syn_HighTime',
+    'syn_Presence',
+    'syn_BassPresence',
+    'syn_MidPresence',
+    'syn_MidHighPresence',
+    'syn_HighPresence',
+    'syn_OnBeat',
+    'syn_ToggleOnBeat',
+    'syn_RandomOnBeat',
+    'syn_BeatTime',
+    'syn_BPMConfidence',
+    'syn_BPMTwitcher',
+    'syn_BeatTime',
+    'syn_BPMSin',
+    'syn_BPMSin2',
+    'syn_BPMSin4',
+    'syn_BPMTri',
+    'syn_BPMTri2',
+    'syn_BPMTri4',
+    'syn_FadeInOut',
+    'syn_Intensity',
+]
+
+# 4x12
+pixels = [
+    [0.0, 0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0, 0.0],
+]
 
 
-pixels = []
+def list_ports():
+    is_working = True
+    dev_port = 0
+    working_ports = []
+    available_ports = []
+    while is_working:
+        camera = cv.VideoCapture(dev_port)
+        if not camera.isOpened():
+            is_working = False
+            print("Port %s is not working." % dev_port)
+        else:
+            is_reading, img = camera.read()
+            print('img', img)
+            w = camera.get(3)
+            h = camera.get(4)
+            if is_reading:
+                print("Port %s is working and reads images (%s x %s)" %
+                      (dev_port, h, w))
+                working_ports.append(dev_port)
+            else:
+                print("Port %s for camera ( %s x %s) is present but does not reads." % (
+                    dev_port, h, w))
+                available_ports.append(dev_port)
+    dev_port += 1
+    print(available_ports, working_ports)
 
 
-def get_pixels():
+list_ports()
+
+
+def get_syn_scene(variables):
+    def get_vec3(arr):
+        return """vec3(
+                {values},
+            ),\n""".format(values=',\n'.join(map(str, arr)))
+
+    def create_matrix(variables):
+        return [
+            [x[0], x[1] or 0, x[2] or 0]
+            for x in variables
+        ]
+
+    matrix = create_matrix(variables)
+    vec3s = map(lambda x: get_vec3(x), matrix)
+    text = '''
+ uniform float[{length}][3] variables ={{
+     {variables},
+ }};
+ 
+ vec4 renderMain() {
+    int row = _xy.x;
+    return variables[row];
+}
+        '''.format(length=vec3s.length, vec3s=vec3s)
+    return text
+
+
+def write_syn_scene_to_file(filename):
+    text = get_syn_scene(variables)
+    with open(filename, 'w') as f:
+        f.write(text)
+
+
+write_syn_scene_to_file('syn_scens/get_variables.glsl')
+
+
+def get_pixels(_):
+
     global pixels
 
-    if not ndi.initialize():
-        return 0
-
-    ndi_find = ndi.find_create_v2()
-
-    if ndi_find is None:
-        return 0
-
-    sources = []
-    while not len(sources) > 0:
-        print('Looking for sources ...')
-        ndi.find_wait_for_sources(ndi_find, 1000)
-        sources = ndi.find_get_current_sources(ndi_find)
-
-    ndi_recv_create = ndi.RecvCreateV3()
-    ndi_recv_create.color_format = ndi.RECV_COLOR_FORMAT_BGRX_BGRA
-
-    ndi_recv = ndi.recv_create_v3(ndi_recv_create)
-
-    if ndi_recv is None:
-        return 0
-
-    ndi.recv_connect(ndi_recv, sources[0])
-
-    ndi.find_destroy(ndi_find)
-
-    while run:
-        t, v, _, _ = ndi.recv_capture_v2(ndi_recv, 5000)
-
-        if t == ndi.FRAME_TYPE_VIDEO:
-            pixels = np.copy(v.data)
-            ndi.recv_free_video_v2(ndi_recv, v)
-
-        if cv.waitKey(1) & 0xff == 27:
-            break
-
-    ndi.recv_destroy(ndi_recv)
-    ndi.destroy()
-
-    return 0
+    # Could be any number, it's system specific, but it's u=usually 0, 1 etc.
+    cap = cv.VideoCapture(2)
+    time.sleep(3)
+    while cap.isOpened():
+        a, frame = cap.read()
+        print(frame)
 
 
 app = Flask(__name__)
@@ -107,104 +196,127 @@ def post():
 
 
 @app.route('/', methods=['GET'])
+def get_tasks():
+    return jsonify({'tasks': tasks})
+
+
+def record_loop(loop_on):
+    while True:
+        if loop_on.value == True:
+            print("loop running")
+        time.sleep(1)
+
+
+@app.route('/syn', methods=['GET'])
 def get():
-    (
+    [
         [
             syn_Level,
             syn_BassLevel,
-            syn_MidLevel,
-            syn_MidHighLevel,
+            syn_MidLevel
         ],
         [
+            syn_MidHighLevel,
             syn_HighLevel,
-            syn_Hits,
+            syn_Hits
+        ],
+        [
             syn_BassHits,
             syn_MidHits,
+            syn_MidHighHits
         ],
         [
-            syn_MidHighHits,
             syn_HighHits,
             syn_Time,
-            syn_BassTime,
+            syn_BassTime
         ],
         [
             syn_MidTime,
             syn_MidHighTime,
-            syn_HighTime,
-            syn_Presence,
+            syn_HighTime
         ],
         [
+            syn_Presence,
             syn_BassPresence,
-            syn_MidPresence,
+            syn_MidPresence
+        ],
+        [
             syn_MidHighPresence,
             syn_HighPresence,
+            syn_OnBeat
         ],
         [
-            syn_OnBeat,
             syn_ToggleOnBeat,
             syn_RandomOnBeat,
-            syn_BeatTime,
+            syn_BeatTime
         ],
         [
             syn_BPMConfidence,
             syn_BPMTwitcher,
-            syn_BeatTime,
-            syn_BPMSin,
+            syn_BeatTime
         ],
         [
+            syn_BPMSin,
             syn_BPMSin2,
-            syn_BPMSin4,
+            syn_BPMSin4
+        ],
+        [
             syn_BPMTri,
             syn_BPMTri2,
-        ], [
-            syn_BPMTri4,
+            syn_BPMTri4
+        ],
+        [
             syn_FadeInOut,
             syn_Intensity,
+            _
         ]
-    ) = pixels
+    ] = map(lambda x: map(str, x),  np.array(pixels)[:, np.r_[:, :3]])
 
-    return jsonify({
-        "syn_level": syn_Level,
-        "syn_bass_level": syn_BassLevel,
-        "syn_mid_level": syn_MidLevel,
-        "syn_mid_high_level": syn_MidHighLevel,
-        "syn_high_level": syn_HighLevel,
-        "syn_hits": syn_Hits,
-        "syn_bass_hits": syn_BassHits,
-        "syn_mid_hits": syn_MidHits,
-        "syn_mid_high_hits": syn_MidHighHits,
-        "syn_high_hits": syn_HighHits,
-        "syn_time": syn_Time,
-        "syn_bass_time": syn_BassTime,
-        "syn_mid_time": syn_MidTime,
-        "syn_mid_high_time": syn_MidHighTime,
-        "syn_high_time": syn_HighTime,
-        "syn_presence": syn_Presence,
-        "syn_bass_presence": syn_BassPresence,
-        "syn_mid_presence": syn_MidPresence,
-        "syn_mid_high_presence": syn_MidHighPresence,
-        "syn_high_presence": syn_HighPresence,
-        "syn_on_beat": syn_OnBeat,
-        "syn_toggle_on_beat": syn_ToggleOnBeat,
-        "syn_random_on_beat": syn_RandomOnBeat,
-        "syn_beat_time": syn_BeatTime,
-        "syn_bpm_confidence": syn_BPMConfidence,
-        "syn_bpm_twitcher": syn_BPMTwitcher,
-        "syn_beat_time": syn_BeatTime,
-        "syn_bpm_sin": syn_BPMSin,
-        "syn_bpm_sin2": syn_BPMSin2,
-        "syn_bpm_sin4": syn_BPMSin4,
-        "syn_bpm_tri": syn_BPMTri,
-        "syn_bpm_tri2": syn_BPMTri2,
-        "syn_bpm_tri4": syn_BPMTri4,
+    return {
+        "syn_Level": syn_Level,
+        "syn_BassLevel": syn_BassLevel,
+        "syn_MidLevel": syn_MidLevel,
+        "syn_MidHighLevel": syn_MidHighLevel,
+        "syn_HighLevel": syn_HighLevel,
+        "syn_Hits": syn_Hits,
+        "syn_BassHits": syn_BassHits,
+        "syn_MidHits": syn_MidHits,
+        "syn_MidHighHits": syn_MidHighHits,
+        "syn_HighHits": syn_HighHits,
+        "syn_Time": syn_Time,
+        "syn_BassTime": syn_BassTime,
+        "syn_MidTime": syn_MidTime,
+        "syn_MidHighTime": syn_MidHighTime,
+        "syn_HighTime": syn_HighTime,
+        "syn_Presence": syn_Presence,
+        "syn_BassPresence": syn_BassPresence,
+        "syn_MidPresence": syn_MidPresence,
+        "syn_MidHighPresence": syn_MidHighPresence,
+        "syn_HighPresence": syn_HighPresence,
+        "syn_OnBeat": syn_OnBeat,
+        "syn_ToggleOnBeat": syn_ToggleOnBeat,
+        "syn_RandomOnBeat": syn_RandomOnBeat,
+        "syn_BeatTime": syn_BeatTime,
+        "syn_BPMConfidence": syn_BPMConfidence,
+        "syn_BPMTwitcher": syn_BPMTwitcher,
+        "syn_BeatTime": syn_BeatTime,
+        "syn_BPMSin": syn_BPMSin,
+        "syn_BPMSin2": syn_BPMSin2,
+        "syn_BPMSin4": syn_BPMSin4,
+        "syn_BPMTri": syn_BPMTri,
+        "syn_BPMTri2": syn_BPMTri2,
+        "syn_BPMTri4": syn_BPMTri4,
         "syn_FadeInOut": syn_FadeInOut,
-        "syn_Intensity": syn_Intensity
-    })
+        "syn_Intensit": syn_Intensity
+    }
 
-
-app.run(
-    host=getenv('MIDI_SERVER_HOST'),
-    port=getenv('MIDI_SERVER_PORT'))
 
 if __name__ == "__main__":
-    get_pixels()
+    recording_on = Value('b', True)
+
+    p = Process(target=get_pixels, args=(recording_on,))
+    p.start()
+    app.run(
+        host=getenv('MIDI_SERVER_HOST'),
+        port=getenv('MIDI_SERVER_PORT'))
+    p.join()

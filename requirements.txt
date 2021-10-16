@@ -5,3 +5,8 @@ simplecoremidi
 flask
 python-dotenv
 Pillow
+ndicapi
+imutils
+lib
+receiver
+finder
