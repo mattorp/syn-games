@@ -51,7 +51,7 @@ const getUniformSearchValue = ({ type, uniform }) =>
 const replaceByType = {
   int: (i) => `${i}`,
   float: (i) => `${i}`,
-  vec: (vec) => `vec${vec.length}( ${vec.reduce((acc, v, i) => `${acc}, ${v / (i === 2 ? 2000 : 1)}`)})`
+  vec: (vec) => `vec${vec.length}( ${vec.reduce((acc, v, i) => `${acc}, ${v}`)})`
 }
 
 const getReplaceWith = ({ type, vars }) => replaceByType[removeNumber(type)](vars)
